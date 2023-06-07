@@ -35,7 +35,7 @@ def jogar():
     reiniciar = True
     # da bem vindo no comeco do jogo
     while reiniciar:
-        print("Bem-vindo, {}! Vamos jogar!".format(nome))
+        print("Bem-vindo ao Jogo da Memória Tche, {}! Vamos jogar!".format(nome))
         print("Pontuação inicial: {}".format(score))
         print("")
         
