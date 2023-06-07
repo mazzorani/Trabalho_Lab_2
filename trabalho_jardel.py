@@ -2,6 +2,9 @@ import random
 import time
 
  # aqui criamos o tabuleiro pela tamanho fornecido pelo usuario
+ #(Divisão inteira)
+ # embaralha os numeros
+ # aprende os numeros das listas
 def criar_tabuleiro(altura, largura):
     total_pares = (altura * largura) // 2
     numeros = list(range(1, total_pares + 1)) * 2
@@ -25,12 +28,12 @@ def imprimir_tabuleiro(tabuleiro, mostrados):
                 print('?', end='\t')
         print()
 
-# aui comeca o jogo 
+# ai comeca o jogo 
 def jogar():
     nome = input("Digite seu nome: ")
     score = 1000
     reiniciar = True
-
+    # da bem vindo no comeco do jogo
     while reiniciar:
         print("Bem-vindo, {}! Vamos jogar!".format(nome))
         print("Pontuação inicial: {}".format(score))
