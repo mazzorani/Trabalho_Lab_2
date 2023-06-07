@@ -109,5 +109,5 @@ while jogo_ativo:
                         pontuação -= PONTUAÇÃO_ERRO
     exibir_tabuleiro()
     exibir_pontuação()
-
+("trocamos de platano")
 pygame.quit()
