@@ -1,114 +1,209 @@
-import pygame
 import random
+import time
 
-# Definição das constantes
-LARGURA_JANELA = 800
-ALTURA_JANELA = 600
-COR_FUNDO = (255, 255, 255)
-COR_CARTA_VIRADA = (200, 200, 200)
-COR_CARTA_ACERTADA = (0, 255, 0)
-COR_TEXTO = (0, 0, 0)
-TAMANHO_CARTA = 100
-ESPAÇO_ENTRE_CARTAS = 10
-LINHAS = 4
-COLUNAS = 4
-PONTUAÇÃO_ACERTO = 0
-PONTUAÇÃO_ERRO = 50
 
-# Inicialização do Pygame
-pygame.init()
-janela = pygame.display.set_mode((LARGURA_JANELA, ALTURA_JANELA))
-pygame.display.set_caption("Jogo da Memória")
+def criar_tabuleiro(altura, largura):
+    total_pares = (altura * largura) // 2
+    numeros = list(range(1, total_pares + 1)) * 2
+    random.shuffle(numeros)
+    tabuleiro = []
+    for i in range(altura):
+        linha = []
+        for j in range(largura):
+            if numeros:
+                linha.append(numeros.pop())
+        tabuleiro.append(linha)
+    return tabuleiro
 
-# Carregamento das imagens
-imagens = [pygame.image.load(f'{i}.png') for i in range(1, 9)]
-random.shuffle(imagens)
-imagens = imagens[:LINHAS * COLUNAS // 2] * 2
-random.shuffle(imagens)
 
-# Criação do tabuleiro
-tabuleiro = [[(imagens[i * COLUNAS + j], False) for j in range(COLUNAS)] for i in range(LINHAS)]
-cartas_viradas = []
-cartas_acertadas = []
-pontuação = 1000
-
-# Função para exibir o tabuleiro
-def exibir_tabuleiro():
-    janela.fill(COR_FUNDO)
-    for i in range(LINHAS):
-        for j in range(COLUNAS):
-            x = j * (TAMANHO_CARTA + ESPAÇO_ENTRE_CARTAS) + ESPAÇO_ENTRE_CARTAS
-            y = i * (TAMANHO_CARTA + ESPAÇO_ENTRE_CARTAS) + ESPAÇO_ENTRE_CARTAS
-            carta, virada = tabuleiro[i][j]
-            if virada:
-                pygame.draw.rect(janela, COR_CARTA_VIRADA, (x, y, TAMANHO_CARTA, TAMANHO_CARTA))
-                janela.blit(carta, (x, y))
+def imprimir_tabuleiro(tabuleiro, mostrados):
+    for i in range(len(tabuleiro)):
+        for j in range(len(tabuleiro[i])):
+            if (i, j) in mostrados:
+                print(tabuleiro[i][j], end='\t')
             else:
-                pygame.draw.rect(janela, COR_CARTA_ACERTADA, (x, y, TAMANHO_CARTA, TAMANHO_CARTA))
-    pygame.display.update()
+                print('?', end='\t')
+        print()
 
-# Função para verificar se as duas cartas viradas são iguais
-def verificar_cartas():
-    carta1 = None
-    carta2 = None
-    
-    for i in range(LINHAS):
-        for j in range(COLUNAS):
-            carta, virada = tabuleiro[i][j]
-            if virada:
-                if carta1 is None:
-                    carta1 = (carta, i, j)
-                else:
-                    carta2 = (carta, i, j)
-    
-    if carta1 is not None and carta2 is not None:
-        if carta1[0] == carta2[0]:
-            cartas_acertadas.append(carta1)
-            cartas_acertadas.append(carta2)
-            return True
-        else:
-            return False
 
-# Função para aguardar um tempo antes de virar as cartas
-def aguardar_virar_cartas():
-    pygame.time.wait(1000)
-    for i in range(LINHAS):
-        for j in range(COLUNAS):
-            carta, virada = tabuleiro[i][j]
-            if virada:
-                tabuleiro[i][j] = (carta, False)
+def jogar():
+    nome = input("Digite seu nome: ")
+    score = 1000
+    reiniciar = True
 
-# Função para exibir a pontuação na tela
-def exibir_pontuação():
-    fonte = pygame.font.Font(None, 36)
-    texto = fonte.render(f"Pontuação: {pontuação}", True, COR_TEXTO)
-    janela.blit(texto, (10, ALTURA_JANELA - 40))
-    pygame.display.update()
 
-# Loop principal do jogo
-jogo_ativo = True
-while jogo_ativo:
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            jogo_ativo = False
-        elif evento.type == pygame.MOUSEBUTTONDOWN and len(cartas_viradas) < 2:
-            pos_x, pos_y = pygame.mouse.get_pos()
-            i = pos_y // (TAMANHO_CARTA + ESPAÇO_ENTRE_CARTAS)
-            j = pos_x // (TAMANHO_CARTA + ESPAÇO_ENTRE_CARTAS)
-            carta, virada = tabuleiro[i][j]
-            if not virada and (i, j) not in cartas_acertadas:
-                tabuleiro[i][j] = (carta, True)
-                cartas_viradas.append((i, j))
-                if len(cartas_viradas) == 2:
-                    if verificar_cartas():
-                        cartas_viradas.clear()
-                        pontuação += PONTUAÇÃO_ACERTO
-                    else:
-                        aguardar_virar_cartas()
-                        cartas_viradas.clear()
-                        pontuação -= PONTUAÇÃO_ERRO
-    exibir_tabuleiro()
-    exibir_pontuação()
-("trocamos de platano")
-pygame.quit()
-("olaaaaaaaaaaaaaaaa")
+    while reiniciar:
+        print("Bem-vindo, {}! Vamos jogar!".format(nome))
+        print("Pontuação inicial: {}".format(score))
+        print("")
+
+
+        tamanho_tabuleiro = int(input("Digite o tamanho do tabuleiro (um número divisível por 2): "))
+        altura = largura = tamanho_tabuleiro
+
+
+        if altura % 2 != 0:
+            print("O tamanho do tabuleiro deve ser um número divisível por 2.")
+            continue
+
+
+        tabuleiro = criar_tabuleiro(altura, largura)
+        mostrados = set()
+        total_pares = (altura * largura) // 2
+        pares_encontrados = 0
+        tentativas = 0
+
+
+        # Mostrar os pares de números
+        print("Pares de números:")
+        imprimir_tabuleiro(tabuleiro, {(i, j) for i in range(altura) for j in range(largura)})
+        print("")
+
+
+        # Aguardar 5 segundos antes de desvirar as cartas
+        print("Aguarde 5 segundos...")
+        time.sleep(5)
+        print("")
+
+
+        # Desvirar todas as cartas
+        imprimir_tabuleiro(tabuleiro, mostrados)
+        print("")
+
+
+        while pares_encontrados < total_pares and score > 0:
+            print("Pontuação atual: {}".format(score))
+            print("")
+
+
+            linha1 = int(input("Escolha uma linha (1 a {}): ".format(altura)))
+            coluna1 = int(input("Escolha uma coluna (1 a {}): ".format(largura)))
+
+
+            primeira_escolha = (linha1 - 1, coluna1 - 1)
+
+
+            if primeira_escolha in mostrados:
+                print("Essa posição já foi revelada!")
+                continue
+
+
+            if linha1 < 1 or coluna1 < 1 or linha1 > altura or coluna1 > largura:
+                print("Posição inválida!")
+                continue
+
+
+            numero1 = tabuleiro[linha1 - 1][coluna1 - 1]
+            mostrados.add(primeira_escolha)
+
+
+            # Mostrar o tabuleiro com a primeira carta virada para cima
+            imprimir_tabuleiro(tabuleiro, mostrados)
+            print("")
+
+
+            linha2 = int(input("Escolha outra linha (1 a {}): ".format(altura)))
+            coluna2 = int(input("Escolha outra coluna (1 a {}): ".format(largura)))
+           
+            segunda_escolha = (linha2 - 1, coluna2 - 1)
+
+
+            if segunda_escolha in mostrados:
+                print("Essa posição já foi revelada!")
+                continue
+
+
+            if linha2 < 1 or coluna2 < 1 or linha2 > altura or coluna2 > largura:
+                print("Posição inválida!")
+                continue
+
+
+            numero2 = tabuleiro[linha2 - 1][coluna2 - 1]
+            mostrados.add(segunda_escolha)
+
+
+            # Mostrar o tabuleiro com as duas cartas viradas para cima
+            imprimir_tabuleiro(tabuleiro, mostrados)
+            print("")
+
+
+            tentativas += 1
+
+
+            if numero1 == numero2:
+                print("Par encontrado!")
+                pares_encontrados += 1
+            else:
+                score -= 50
+                print("Os números não são iguais. -50 pontos!")
+
+
+                # Desvirar as cartas
+                mostrados.remove(primeira_escolha)
+                mostrados.remove(segunda_escolha)
+
+
+            if tentativas == 5:
+                print("Você atingiu o limite de 5 jogadas!")
+                break
+
+
+        if tentativas == 2 and pares_encontrados < total_pares:
+            continuar = input("Deseja continuar jogando? (s/n): ")
+            if continuar.lower() == 'n':
+                reiniciar = False
+
+
+        # Verificar se o jogador venceu ou perdeu
+        if score <= 0:
+            print("Pontuação final: {}".format(score))
+            print("Você perdeu! Tente novamente.")
+            break
+        elif pares_encontrados == total_pares:
+            print("Parabéns, {}! Você venceu!".format(nome))
+            break
+    reiniciar_jogo = input("Deseja jogar novamente? (s/n): ")
+    if reiniciar_jogo.lower() != 's':
+        reiniciar = False
+    # Armazenar nome e pontuação em um arquivo
+    with open("ranking.txt", "a") as file:
+        file.write("{}: {}\n".format(nome, score))
+
+
+def exibir_ranking():
+    try:
+        with open("ranking.txt", "r") as file:
+            ranking = [linha.strip() for linha in file]
+            if ranking:
+                print("Ranking:")
+                for linha in ranking:
+                    print(linha)
+            else:
+                print("Ainda não há pontuações registradas.")
+    except FileNotFoundError:
+        print("Ainda não há pontuações registradas.")
+
+
+def main():
+    print("Jogo da Memória")
+    print("Escolha uma opção:")
+    print("1. Jogar")
+    print("2. Exibir ranking")
+    print("3. Sair")
+
+
+    opcao = input("Opção: ")
+    if opcao == '1':
+        jogar()
+    elif opcao == '2':
+        exibir_ranking()
+    elif opcao == '3':
+        print("Obrigado por jogar! Até a próxima.")
+    else:
+        print("Opção inválida. Por favor, escolha uma opção válida.")
+        main()
+
+
+
+
+main()
