@@ -111,3 +111,4 @@ while jogo_ativo:
     exibir_pontuação()
 ("trocamos de platano")
 pygame.quit()
+("olaaaaaaaaaaaaaaaa")
