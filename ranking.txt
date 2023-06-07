@@ -1,3 +1,7 @@
 joao: 1000
 jo: 1000
 k: 1000
+lara: 1000
+loco: 950
+vik: 1000
+paul: 1000

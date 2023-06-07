@@ -148,7 +148,7 @@ def jogar():
 
         if nome in ranking and ranking[nome] >= score:
             print("Sua pontuação não é alta o suficiente para entrar no ranking.")
-        else:
+        if score > 50:
             ranking[nome] = score
             with open("ranking.txt", "w") as file:
                 for nome, pontuacao in ranking.items():
