@@ -1,7 +1,7 @@
 import random
 import time
 
-
+ # aqui criamos o tabuleiro pela tamanho fornecido pelo usuario
 def criar_tabuleiro(altura, largura):
     total_pares = (altura * largura) // 2
     numeros = list(range(1, total_pares + 1)) * 2
@@ -15,7 +15,7 @@ def criar_tabuleiro(altura, largura):
         tabuleiro.append(linha)
     return tabuleiro
 
-
+ # aqui faz a impresao do tabuleiro 
 def imprimir_tabuleiro(tabuleiro, mostrados):
     for i in range(len(tabuleiro)):
         for j in range(len(tabuleiro[i])):
@@ -25,7 +25,7 @@ def imprimir_tabuleiro(tabuleiro, mostrados):
                 print('?', end='\t')
         print()
 
-
+# aui comeca o jogo 
 def jogar():
     nome = input("Digite seu nome: ")
     score = 1000
@@ -35,9 +35,13 @@ def jogar():
         print("Bem-vindo, {}! Vamos jogar!".format(nome))
         print("Pontuação inicial: {}".format(score))
         print("")
+        
+        #pergunta tamanho do tabuleiro
 
         tamanho_tabuleiro = int(input("Digite o tamanho do tabuleiro (um número divisível por 2): "))
         altura = largura = tamanho_tabuleiro
+
+        # se nao for divisivel por 2 nao passa
 
         if altura % 2 != 0:
             print("O tamanho do tabuleiro deve ser um número divisível por 2.")
@@ -49,17 +53,17 @@ def jogar():
         pares_encontrados = 0
         tentativas = 0
 
-        # Mostrar os pares de números
+        # mostrar o tabueiro virado para a pessoa ver os pares
         print("Pares de números:")
         imprimir_tabuleiro(tabuleiro, {(i, j) for i in range(altura) for j in range(largura)})
         print("")
 
-        # Aguardar 5 segundos antes de desvirar as cartas
+        # aqui mostra 5 segundos do tabuleiro virado para mostrar pros 6
         print("Aguarde 5 segundos...")
         time.sleep(5)
         print("")
 
-        # Desvirar todas as cartas
+        # desvirar ele 
         imprimir_tabuleiro(tabuleiro, mostrados)
         print("")
 
@@ -84,7 +88,7 @@ def jogar():
             numero1 = tabuleiro[linha1 - 1][coluna1 - 1]
             mostrados.add(primeira_escolha)
 
-            # Mostrar o tabuleiro com a primeira carta virada para cima
+            # carta virada 1
             imprimir_tabuleiro(tabuleiro, mostrados)
             print("")
 
@@ -105,7 +109,7 @@ def jogar():
             numero2 = tabuleiro[linha2 - 1][coluna2 - 1]
             mostrados.add(segunda_escolha)
 
-            # Mostrar o tabuleiro com as duas cartas viradas para cima
+            # carta virada 2
             imprimir_tabuleiro(tabuleiro, mostrados)
             print("")
 
@@ -122,14 +126,14 @@ def jogar():
                 mostrados.remove(primeira_escolha)
                 mostrados.remove(segunda_escolha)
 
-        # Verificar se o jogador venceu ou perdeu
+        # verificar se o jogador venceu ou perdeu
         if score <= 0:
             print("Pontuação final: {}".format(score))
             print("Você perdeu! Tente novamente.")
         elif pares_encontrados == total_pares:
             print("Parabéns, {}! Você venceu!".format(nome))
 
-        # Armazenar nome e pontuação em um arquivo
+        # colocar o nome e pontuação no arquivo
         ranking = {}
         try:
             with open("ranking.txt", "r") as file:
@@ -171,10 +175,10 @@ def exibir_ranking():
     input("Pressione Enter para voltar ao menu...")
     main()
 
-
+ # menu do jogo
 def main():
     while True:
-        print("Jogo da Memória")
+        print("Jogo da Memória Tche")
         print("Escolha uma opção:")
         print("1. Jogar")
         print("2. Exibir ranking")
